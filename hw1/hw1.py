@@ -1,12 +1,19 @@
 from PIL import Image
 import numpy as np
 import cv2
+import os
 
-img = Image.open("lena.bmp")
+# get the file_dir of the current working directory
+file_full_path = os.path.realpath(__file__)
+file_dir = os.path.dirname(file_full_path)
+
+file_name = "lena.bmp"
+result_name = "result.jpg"
+
+img = Image.open(os.path.join(file_dir, file_name))
 width, height = img.size
 #print(img.size)
 #img.show()
-
 
 def upside_down(img):
 	result = Image.new(img.mode, img.size)
@@ -81,7 +88,9 @@ def upside_down2(img):
 		img[y] = img[height-y-1]
 		img[height-y-1] = temp		
 	img = np.asarray(img)
-	cv2.imwrite('test.jpg',img)
+	cv2.imwrite(os.path.join(file_dir, result_name),img)
+
+if __name__ == '__main__':
 
 # arr = np.array([[1,2,3],
 # 				[4,5,6],
@@ -95,8 +104,8 @@ def upside_down2(img):
 # arr[2] = temp
 # print('Final arr = \n',arr)
 
-img2 = cv2.imread("lena.bmp")
-upside_down2(img2)
+	img2 = cv2.imread(os.path.join(file_dir, file_name))
+	upside_down2(img2)
 
 # upside_down(img).save("lena_upside_down.bmp")
 # right_side_left(img).save("lena_right_side_left.bmp")
