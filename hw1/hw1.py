@@ -14,8 +14,7 @@ w, h = img.size # (512, 512)
 def upside_down(img):
 	result = Image.new(img.mode, img.size)
 	for y in range(h//2): # 0-255
-		for x in range(w
-	): # 0-511
+		for x in range(w): # 0-511
 			up = img.getpixel((x, y))
 			down = img.getpixel((x, h - 1 - y)) 
 		
@@ -28,14 +27,11 @@ def upside_down(img):
 def right_side_left(img):
 	result = Image.new(img.mode, img.size)
 	for y in range(h): # 0-511
-		for x in range(w
-	//2): # 0-255
+		for x in range(w//2): # 0-255
 			left = img.getpixel((x, y))
-			right = img.getpixel((w
-		 - 1 - x, y))
+			right = img.getpixel((w - 1 - x, y))
 			
-			result.putpixel((w
-		 - 1 - x, y), left)
+			result.putpixel((w - 1 - x, y), left)
 			result.putpixel((x, y), right)
 
 	result.save(os.path.join(file_dir, "lena_right_side_left.bmp"))
@@ -44,14 +40,11 @@ def right_side_left(img):
 def diagonally_mirrored(img):
 	result = Image.new(img.mode, img.size)
 	for y in range(h):
-		for x in range(w
-	 - y):
+		for x in range(w - y):
 			a = img.getpixel((x, y))
-			b = img.getpixel((w
-		 - 1 - x, h - 1 - y))
+			b = img.getpixel((w - 1 - x, h - 1 - y))
 			
-			result.putpixel((w
-		 - 1 - x, h - 1 - y), a)
+			result.putpixel((w - 1 - x, h - 1 - y), a)
 			result.putpixel((x, y), b)
 
 	result.save(os.path.join(file_dir, "lena_diagonally_flip.bmp"))
@@ -64,8 +57,7 @@ def rotate(img):
 	#result.show()
 
 def shrink(img):
-	x, y = int(w
-/2) ,int(h/2)
+	x, y = int(w/2) ,int(h/2)
 	result = img.resize((x,y))
  
 	result.save(os.path.join(file_dir, "lena_shrink.bmp"))
