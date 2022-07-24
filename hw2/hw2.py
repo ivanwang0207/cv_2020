@@ -2,27 +2,32 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import os
 
+# get the file_dir of the current working directory
+file_full_path = os.path.realpath(__file__)
+file_dir = os.path.dirname(file_full_path)
 
-img = Image.open("lena.bmp")
+file_name = "lena.bmp"
+img = Image.open(os.path.join(file_dir, file_name))
 width, height = img.size
 
 def binarize(img):
-	im = np.array(img)
+	im = np.array(img.convert('L'))
 	th = 128
 	im_bin_128 = (im > th) * 255
 	result = Image.fromarray(np.uint8(im_bin_128))
-	result.show()
-	return result
+ 
+	result.save(os.path.join(file_dir, "lena_binarize.bmp"))
+ 	#result.show()
 
 def histogram(img):
-	im = np.array(img)
+	im = np.array(img.convert('L'))
 	arr = im.flatten()
 	
 	plt.hist(arr, bins=256, facecolor='black')
-	plt.savefig("lena_histogram.jpg")
-	plt.show()  
-	return 0
+	plt.savefig(os.path.join(file_dir, "lena_histogram.jpg"))
+	#plt.show()  
 
 def connected_components(img_bin):
     labels = []
@@ -63,39 +68,44 @@ def connected_components(img_bin):
 
     return labels
 
-# 1
-binarize(img).save("lena_binarize.bmp")
-# 2
-histogram(img)
-# 3
-img_bin = Image.open("lena_binarize.bmp") #讀入th = 128 的檔案
-img_new =cv2.imread("lena_binarize.bmp") #用cv2畫出矩形和重心
-for component in connected_components(img_bin):
-	if type(component) != list: #有些為None
-		continue
-	if len(component) < 500: # 只取面積 > 500
-		continue
+if __name__ == "__main__":
+    
+    # create binarized image of grayscale lena
+	binarize(img)
+ 
+	# create a histogram for the grayscale lena
+	histogram(img)
 	
-	(left, top), (right, bottom) = component[0], component[0]
-	centroid_x = 0
-	centroid_y = 0
+	img_bin = Image.open(os.path.join(file_dir, "lena_binarize.bmp")) 
+	img_new =cv2.imread(os.path.join(file_dir, "lena_binarize.bmp")) #用cv2畫出矩形和重心
 
-	for x, y in component: #找到左上和右下的點
-		if x < left:
-			left = x
-		if x > right:
-			right = x
-		if y < top:
-			top = y
-		if y > bottom:
-			bottom = y
+	for component in connected_components(img_bin):
+		if type(component) != list: #有些為None
+			continue
+		if len(component) < 500: # 只取面積 > 500
+			continue
+		
+		(left, top), (right, bottom) = component[0], component[0]
+		centroid_x = 0
+		centroid_y = 0
 
-		centroid_x += x
-		centroid_y += y
+		for x, y in component: #找到左上和右下的點
+			if x < left:
+				left = x
+			if x > right:
+				right = x
+			if y < top:
+				top = y
+			if y > bottom:
+				bottom = y
 
-	C_x = centroid_x / len(component)
-	C_y = centroid_y / len(component)
-	cv2.rectangle(img_new, (left, top), (right, bottom), (0,255,0))
-	cv2.circle(img_new, (int(C_x), int(C_y)), 5, (0,0,255), -1)
+			centroid_x += x
+			centroid_y += y
 
-cv2.imwrite("lena_connected_component.bmp",img_new)
+		C_x = centroid_x / len(component)
+		C_y = centroid_y / len(component)
+		cv2.rectangle(img_new, (left, top), (right, bottom), (0,255,0))
+		cv2.circle(img_new, (int(C_x), int(C_y)), 5, (0,0,255), -1)
+
+	cv2.imwrite(os.path.join(file_dir, "lena_connected_component.bmp"),img_new)
+	
